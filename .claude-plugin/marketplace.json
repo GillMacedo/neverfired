@@ -1,0 +1,14 @@
+{
+  "name": "neverfired-marketplace",
+  "description": "Marketplace for neverfired, which finds Prometheus alerts no promtool test shows firing and promtool tests that can't fail.",
+  "owner": {
+    "name": "Giulliano Macedo"
+  },
+  "plugins": [
+    {
+      "name": "neverfired",
+      "source": "./plugin",
+      "description": "Check promtool rule unit tests: alerts no test shows firing, tests that pass whatever the rules say, and deployed rules that differ from the tested ones."
+    }
+  ]
+}

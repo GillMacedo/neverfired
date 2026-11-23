@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: checkout
+  namespace: shop
+spec:
+  groups:
+    - name: checkout
+      rules:
+        - record: job:checkout_requests_errors:ratio_rate5m
+          expr: |
+            sum by (job) (rate(checkout_requests_total{code=~"5.."}[5m]))
+              /
+            sum by (job) (rate(checkout_requests_total[5m]))
+        - alert: CheckoutHighErrorRate
+          expr: job:checkout_requests_errors:ratio_rate5m > 0.02
+          for: 10m
+          labels:
+            severity: page
+        - alert: CheckoutDown
+          expr: up{job="checkout"} == 0
+          for: 5m
+          labels:
+            severity: page
+        - alert: CartServiceDown
+          expr: up{job="cart"} == 0
+          for: 5m
+          labels:
+            severity: page

@@ -1,0 +1,13 @@
+{
+  "name": "neverfired",
+  "version": "0.1.0",
+  "description": "Find Prometheus alert rules that no promtool unit test shows firing, and promtool tests that pass without checking anything: misspelled alertnames, rule_files that match no file, quiet checks whose input series the expression never reads, and checks before for: elapses. Reads the test and rule files; runs nothing.",
+  "author": {
+    "name": "Giulliano Macedo",
+    "url": "https://github.com/GillMacedo"
+  },
+  "homepage": "https://github.com/GillMacedo/neverfired",
+  "repository": "https://github.com/GillMacedo/neverfired",
+  "license": "MIT",
+  "keywords": ["prometheus", "promtool", "alerting", "alert-rules", "unit-testing", "test-coverage", "promql", "observability", "sre", "monitoring-mixins"]
+}

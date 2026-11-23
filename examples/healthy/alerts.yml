@@ -1,0 +1,22 @@
+groups:
+  - name: checkout
+    rules:
+      - record: job:checkout_requests_errors:ratio_rate5m
+        expr: |
+          sum by (job) (rate(checkout_requests_total{code=~"5.."}[5m]))
+            /
+          sum by (job) (rate(checkout_requests_total[5m]))
+
+      - alert: CheckoutHighErrorRate
+        expr: job:checkout_requests_errors:ratio_rate5m > 0.05
+        for: 10m
+        labels:
+          severity: page
+        annotations:
+          summary: "{{ $labels.job }} fails {{ $value | humanizePercentage }} of checkouts"
+
+      - alert: CheckoutDown
+        expr: up{job="checkout"} == 0
+        for: 5m
+        labels:
+          severity: page

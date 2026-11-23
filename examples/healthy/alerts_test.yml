@@ -1,0 +1,54 @@
+rule_files:
+  - alerts.yml
+
+evaluation_interval: 1m
+
+tests:
+  - name: checkout errors
+    interval: 1m
+    input_series:
+      # 10% of requests fail.
+      - series: 'checkout_requests_total{job="checkout", code="200"}'
+        values: '0+90x30'
+      - series: 'checkout_requests_total{job="checkout", code="500"}'
+        values: '0+10x30'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: CheckoutHighErrorRate
+        exp_alerts:
+          - exp_labels:
+              job: checkout
+              severity: page
+            exp_annotations:
+              summary: "checkout fails 10% of checkouts"
+
+  - name: healthy traffic doesn't page
+    interval: 1m
+    input_series:
+      # 1% of requests fail.
+      - series: 'checkout_requests_total{job="checkout", code="200"}'
+        values: '0+99x30'
+      - series: 'checkout_requests_total{job="checkout", code="500"}'
+        values: '0+1x30'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: CheckoutHighErrorRate
+        exp_alerts: []
+
+  - name: checkout down
+    interval: 1m
+    input_series:
+      - series: 'up{job="checkout", instance="checkout-0"}'
+        values: '1x5 0x20'
+    alert_rule_test:
+      # Down for 4 minutes: still pending.
+      - eval_time: 10m
+        alertname: CheckoutDown
+        exp_alerts: []
+      - eval_time: 12m
+        alertname: CheckoutDown
+        exp_alerts:
+          - exp_labels:
+              job: checkout
+              instance: checkout-0
+              severity: page
